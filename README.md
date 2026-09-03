@@ -37,5 +37,5 @@ pip install -e .
 ### 4. Run the app
 Now you can start the application from anywhere in your terminal by running:
 ```bash
-my-command
+hackadash
 ```
