@@ -1,0 +1,42 @@
+.OBpanel { /*Onboarding Panel */
+    margin: 3;
+    width: 50%;
+    height: 100%;
+    border: double $accent;
+    align: center middle;
+}
+
+/* Ensure Input has a explicit width so horizontal alignment is visible */
+.OBpanel Input {
+    width: 75%; 
+    align: center middle;
+}
+
+.header {
+    align: center top;
+    width: 75%;
+    text-align: center;
+    padding-top: 1;
+    border-bottom: double $accent;
+}
+
+.top {
+    dock: top;
+    align: center top;
+    width: 100%;
+    height: 4;
+}
+
+.bottom {
+    dock: bottom;
+    align: center bottom;
+    width: 100%;
+    height: 4;
+}
+
+#title {
+    text-align: center;
+    align: center middle;
+    width: 100%;
+    text-style: bold;
+}
