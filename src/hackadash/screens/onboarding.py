@@ -52,16 +52,21 @@ class OnboardingScreen(Screen):
 
                 try:
                     config.read(config_file)
-                    self.api_key = config.get("settings", "api_key", fallback=None)
-                    self.api_url = config.get("settings", "api_url", fallback=None)
+                    self.api_key = config.get("settings", "api_key", fallback=None) or ""
+                    self.api_url = config.get("settings", "api_url", fallback=None) or ""
 
                     self.query_one("#searchResult", Label).update("Config file found!")
                     self.query_one("#continueCfg", Button).disabled = False
                 except Exception as e:
                     print(f"Error reading the configuration file: {e}")
-                    self.query_one("#searchResult", Label).update(f"Error reading the configuration file: {e}")
+                    result_label : Label = self.query_one("#searchResult", Label)
+                    result_label.update(f"Error reading the configuration file: {e}")
+                    result_label.styles.color = "$error"
+
             else:
-                self.query_one("#searchResult", Label).update(f"Could not find wakatime config at: {str(config_file)}")
+                result_label : Label = self.query_one("#searchResult", Label)
+                result_label.update(f"Could not find wakatime config at: {str(config_file)}")
+                result_label.styles.color = "$error"
 
         elif button_id == "continueCfg":
             self.create_config_file(
@@ -69,12 +74,16 @@ class OnboardingScreen(Screen):
                 self.api_url,
                 "wakatime.cfg"
             )
+
+            self.app.switch_screen("dashboard")
             
         elif button_id == "saveKey":
             self.create_config_file(
                 self.query_one("#keyInput", Input).value,
                 "https://hackatime.hackclub.com/api/hackatime/v1",
                 )
+
+            self.app.switch_screen("dashboard")
 
 
     def create_config_file(self, api_key:str, api_url:str, mode:str = "manual"):
