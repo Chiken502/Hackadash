@@ -2,6 +2,7 @@ from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.containers import Horizontal, Vertical, Container, Grid
 from textual.widgets import Header, Footer, Label, Digits
+from textual import work
 import http.client
 import configparser
 from pathlib import Path
@@ -34,7 +35,8 @@ class DashboardScreen(Screen):
     def action_refresh(self) -> None:
         self.fetch_data()
 
-    def fetch_data(self):
+    @work(exclusive=True, thread=True)
+    async def fetch_data(self):
         settings_path = Path("settings.cfg")
         if settings_path.is_file():
             config = configparser.ConfigParser()
