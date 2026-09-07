@@ -30,13 +30,7 @@ class DashboardScreen(Screen):
         yield Footer()
 
     def _on_mount(self, event):
-        self.fetch_cfg_data()
-        self.fetch_user_data()
-
-        self.fetch_total_stats()
-        self.fetch_weekly_stats()
-        self.fetch_daily_leaderboard_data()
-        self.fetch_weekly_leaderboard_data()
+        self.fetch_data()
 
     def action_refresh(self) -> None:
         self.query_one("#totalAllTime", Label).update("Total Time: ...")
@@ -45,6 +39,12 @@ class DashboardScreen(Screen):
         self.query_one("#dailyLeaderboardRank", Label).update("Daily Leaderboard Rank: ...")
         self.query_one("#weeklyLeaderboardRank", Label).update("Weekly Leaderboard Rank: ...")
 
+        self.fetch_data()
+
+    @work(exclusive=True, thread=True)
+    async def fetch_data(self):
+        self.fetch_cfg_data()
+        self.fetch_user_data()
 
         self.fetch_total_stats()
         self.fetch_weekly_stats()
@@ -87,8 +87,7 @@ class DashboardScreen(Screen):
 
         conn.close()
     
-    @work(exclusive=True, thread=True)
-    async def fetch_daily_leaderboard_data(self):
+    def fetch_daily_leaderboard_data(self):
         conn = conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
 
         conn.request(
@@ -110,8 +109,7 @@ class DashboardScreen(Screen):
 
         conn.close()
 
-    @work(exclusive=True, thread=True)
-    async def fetch_weekly_leaderboard_data(self):
+    def fetch_weekly_leaderboard_data(self):
         conn = conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
 
         conn.request(
@@ -133,8 +131,7 @@ class DashboardScreen(Screen):
 
         conn.close()
 
-    @work(exclusive=True, thread=True)
-    async def fetch_weekly_stats(self):
+    def fetch_weekly_stats(self):
         conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
         
         headers = {
@@ -160,8 +157,7 @@ class DashboardScreen(Screen):
 
         conn.close()
 
-    @work(exclusive=True, thread=True)
-    async def fetch_total_stats(self):
+    def fetch_total_stats(self):
         conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
         
         headers = {
