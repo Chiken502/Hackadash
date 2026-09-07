@@ -86,8 +86,9 @@ class DashboardScreen(Screen):
         self.query_one("#userId", Label).update(f"ID: {self.user_id}")
 
         conn.close()
-    
-    def fetch_daily_leaderboard_data(self):
+
+    @work()
+    async def fetch_daily_leaderboard_data(self):
         conn = conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
 
         conn.request(
@@ -109,7 +110,8 @@ class DashboardScreen(Screen):
 
         conn.close()
 
-    def fetch_weekly_leaderboard_data(self):
+    @work()
+    async def fetch_weekly_leaderboard_data(self):
         conn = conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
 
         conn.request(
@@ -131,7 +133,8 @@ class DashboardScreen(Screen):
 
         conn.close()
 
-    def fetch_weekly_stats(self):
+    @work()
+    async def fetch_weekly_stats(self):
         conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
         
         headers = {
@@ -157,7 +160,8 @@ class DashboardScreen(Screen):
 
         conn.close()
 
-    def fetch_total_stats(self):
+    @work()
+    async def fetch_total_stats(self):
         conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
         
         headers = {
