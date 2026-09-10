@@ -22,9 +22,12 @@ class DashboardScreen(Screen):
         yield Header()
         yield Label("Name: ...", id="displayName")
         yield Label("ID: ...", id="userId")
-        yield Label("Total Time: ...", id="totalAllTime")
+        yield Label("")
+        yield Label("Total Time:", id="totalAllTimeLabel")
+        yield Digits("00:00:00", id="totalAllTime")
         yield Label("Time past 7 days: ...", id="totalWeekTime")
         yield Label("Daily avg past 7 days: ...", id="dailyAvgTime")
+        yield Label("")
         yield Label("Daily Leaderboard Rank: ...", id="dailyLeaderboardRank")
         yield Label("Weekly Leaderboard Rank: ...", id="weeklyLeaderboardRank")
         yield Footer()
@@ -33,7 +36,7 @@ class DashboardScreen(Screen):
         self.fetch_data()
 
     def action_refresh(self) -> None:
-        self.query_one("#totalAllTime", Label).update("Total Time: ...")
+        self.query_one("#totalAllTime", Digits).update("00:00:00")
         self.query_one("#totalWeekTime", Label).update("Time past 7 days: ...")
         self.query_one("#dailyAvgTime", Label).update("Daily avg past 7 days: ...")
         self.query_one("#dailyLeaderboardRank", Label).update("Daily Leaderboard Rank: ...")
@@ -177,11 +180,18 @@ class DashboardScreen(Screen):
         response = conn.getresponse().read().decode("utf-8")
         data_dict = json.loads(response)
 
-        self.total_seconds_readable = data_dict["data"]["human_readable_total"]
+        self.total_seconds = data_dict["data"]["total_seconds"]
         self.streak = data_dict["data"]["streak"]
         self.projects = data_dict["data"]["projects"]
         self.languages = data_dict["data"]["languages"]
 
-        self.query_one("#totalAllTime", Label).update(f"Total Time: {self.total_seconds_readable}")
+        self.query_one("#totalAllTime", Digits).update(self.getDigitFormat(self.total_seconds))
 
         conn.close()
+
+    def getDigitFormat(self, seconds: int) -> str:
+        hours = int(seconds/60.0/60.0)
+        minutes = int((seconds - (hours*60*60)) /60.0)
+        remaning_seconds = seconds - (hours*60*60) - (minutes * 60)
+
+        return f"{hours:02}:{minutes:02}:{remaning_seconds:02}"
