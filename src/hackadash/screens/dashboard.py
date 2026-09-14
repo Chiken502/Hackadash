@@ -1,7 +1,7 @@
 from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.containers import Horizontal, Vertical, Container, Grid
-from textual.widgets import Header, Footer, Label, Digits
+from textual.widgets import Header, Footer, Label, Digits, ListItem, ListView
 from textual import work
 import http.client
 import configparser
@@ -14,22 +14,46 @@ from datetime import datetime, timedelta, timezone
 class DashboardScreen(Screen):
     """Dashboard Screen to display info from hackatime api calls"""
 
-    BINDINGS = [("r", "refresh", "Refresh Dashboard")]
+    BINDINGS = [
+        ("r", "refresh", "Refresh Dashboard"),
+        ("s", "switch", "Switch time range")
+        ]
 
     display_name = ""
+    mode = "total"
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield Label("Name: ...", id="displayName")
-        yield Label("ID: ...", id="userId")
-        yield Label("")
-        yield Label("Total Time:", id="totalAllTimeLabel")
-        yield Digits("00:00:00", id="totalAllTime")
-        yield Label("Time past 7 days: ...", id="totalWeekTime")
-        yield Label("Daily avg past 7 days: ...", id="dailyAvgTime")
-        yield Label("")
-        yield Label("Daily Leaderboard Rank: ...", id="dailyLeaderboardRank")
-        yield Label("Weekly Leaderboard Rank: ...", id="weeklyLeaderboardRank")
+        with Container(id="dash"):
+            with Horizontal(id="personal"):
+                yield Label("Name: ...", id="displayName")
+                yield Label("ID: ...", id="userId")
+            with Horizontal():
+                with Horizontal(id="times"):
+                    with Vertical():
+                        yield Label("Total Time:", id="totalAllTimeLabel")
+                        yield Digits("00:00:00", id="totalAllTime")
+                    with Vertical():
+                        yield Label("Time past 7 days: ...", id="totalWeekTime")
+                        yield Label("Daily avg past 7 days: ...", id="dailyAvgTime")
+
+                with Vertical(id="leaderboards"):
+                    yield Label("Daily Leaderboard Rank: ...", id="dailyLeaderboardRank")
+                    yield Label("Weekly Leaderboard Rank: ...", id="weeklyLeaderboardRank")
+
+            with Horizontal():
+                with Vertical(id="projects"):
+                    yield Label("Top Projects")
+                    yield Label("Loading...", id="projectList1", classes="projectLabel")
+                    yield Label("Loading...", id="projectList2", classes="projectLabel")
+                    yield Label("Loading...", id="projectList3", classes="projectLabel")
+
+                with Vertical(id="languages"):
+                    yield Label("Top Languages")
+                    yield Label("Loading...", id="languageList1", classes="languageLabel")
+                    yield Label("Loading...", id="languageList2", classes="languageLabel")
+                    yield Label("Loading...", id="languageList3", classes="languageLabel")
+        
         yield Footer()
 
     def _on_mount(self, event):
@@ -41,6 +65,29 @@ class DashboardScreen(Screen):
         self.query_one("#dailyAvgTime", Label).update("Daily avg past 7 days: ...")
         self.query_one("#dailyLeaderboardRank", Label).update("Daily Leaderboard Rank: ...")
         self.query_one("#weeklyLeaderboardRank", Label).update("Weekly Leaderboard Rank: ...")
+        self.query_one("#projectList1", Label).update("Loading...")
+        self.query_one("#projectList2", Label).update("Loading...")
+        self.query_one("#projectList3", Label).update("Loading...")
+        self.query_one("#languageList1", Label).update("Loading...")
+        self.query_one("#languageList2", Label).update("Loading...")
+        self.query_one("#languageList3", Label).update("Loading...")
+
+        self.fetch_data()
+
+    def action_switch(self) -> None:
+        if self.mode == "total":
+            self.mode = "weekly"
+        else: 
+            self.mode = "total" 
+
+        self.query_one("#totalAllTime", Digits).update("00:00:00")
+        self.query_one("#totalWeekTime", Label).update("Time past 7 days: ...")
+        self.query_one("#dailyAvgTime", Label).update("Daily avg past 7 days: ...")
+        self.query_one("#dailyLeaderboardRank", Label).update("Daily Leaderboard Rank: ...")
+        self.query_one("#weeklyLeaderboardRank", Label).update("Weekly Leaderboard Rank: ...")
+        self.query_one("#projectList1", Label).update("Loading...")
+        self.query_one("#projectList2", Label).update("Loading...")
+        self.query_one("#projectList3", Label).update("Loading...")
 
         self.fetch_data()
 
@@ -173,7 +220,7 @@ class DashboardScreen(Screen):
 
         conn.request(
             "GET",
-            "/api/v1/users/my/stats?start_date=&end_date=&limit=1&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true",
+            "/api/v1/users/my/stats?start_date=&end_date=&limit=3&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true",
             headers=headers
         )
 
@@ -182,10 +229,21 @@ class DashboardScreen(Screen):
 
         self.total_seconds = data_dict["data"]["total_seconds"]
         self.streak = data_dict["data"]["streak"]
-        self.projects = data_dict["data"]["projects"]
+        self.projects : list = data_dict["data"]["projects"]
         self.languages = data_dict["data"]["languages"]
 
         self.query_one("#totalAllTime", Digits).update(self.getDigitFormat(self.total_seconds))
+
+        print(data_dict["data"])
+        for i in range(len(self.projects)):
+            project = self.projects[i]
+            project_text = str(i + 1) + ". " + project["name"] + " " * (20 - len(project["name"]))  + "Total Time: " + project["text"]
+            self.query_one("#projectList" + str(i+1), Label).update(project_text)
+
+        for i in range(len(self.languages)):
+            language = self.languages[i]
+            languge_text = str(i + 1) + ". " + language["name"] + " " * (20 - len(language["name"])) + "Total Time: " + language["text"]
+            self.query_one("#languageList" + str(i + 1), Label).update(languge_text) 
 
         conn.close()
 

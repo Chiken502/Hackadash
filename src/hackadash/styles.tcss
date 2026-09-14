@@ -57,3 +57,57 @@
 }
 
 /*Dashboard Screen TCSS*/
+#dash{
+    align: center middle;
+}
+
+#personal {
+    height: 3;
+    border-bottom: double $accent;
+    margin-top: 1;
+    margin-bottom: 0;
+}
+
+#displayName {
+    margin-right: 2;
+    margin-left: 2;
+}
+
+#times {
+    border: double $accent;
+    width: 50%;
+    align: center middle;
+    margin: 2;
+    height: 6;
+}
+
+#leaderboards {
+    width: 50%;
+    border: double $accent;
+    margin: 2;
+    height: 6;
+}
+
+#dailyAvgTime {
+    margin-right: 2;
+}
+
+#projects {
+    border: double $accent;
+    width: 50%;
+    margin: 2;
+}
+
+.projectLabel {
+    width: 100%
+}
+
+#languages {
+    border: double $accent;
+    width: 50%;
+    margin: 2;
+}
+
+.languageLabel {
+    width: 100;
+}

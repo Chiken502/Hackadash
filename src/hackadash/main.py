@@ -12,6 +12,8 @@ class Hackadash(App):
         "onboarding": OnboardingScreen,
         "dashboard": DashboardScreen}
 
+    ansi_color = True
+
     def on_mount(self) -> None:
         if Path("settings.cfg").is_file():
             self.push_screen("dashboard")
