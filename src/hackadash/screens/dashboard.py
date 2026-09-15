@@ -7,7 +7,7 @@ import http.client
 import configparser
 from pathlib import Path
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, time
 
 
 
@@ -43,13 +43,13 @@ class DashboardScreen(Screen):
 
             with Horizontal():
                 with Vertical(id="projects"):
-                    yield Label("Top Projects")
+                    yield Label("Top Projects", id="topProjectsLabel")
                     yield Label("Loading...", id="projectList1", classes="projectLabel")
                     yield Label("Loading...", id="projectList2", classes="projectLabel")
                     yield Label("Loading...", id="projectList3", classes="projectLabel")
 
                 with Vertical(id="languages"):
-                    yield Label("Top Languages")
+                    yield Label("Top Languages", id="topLanguagesLabel")
                     yield Label("Loading...", id="languageList1", classes="languageLabel")
                     yield Label("Loading...", id="languageList2", classes="languageLabel")
                     yield Label("Loading...", id="languageList3", classes="languageLabel")
@@ -77,6 +77,8 @@ class DashboardScreen(Screen):
     def action_switch(self) -> None:
         if self.mode == "total":
             self.mode = "weekly"
+        elif self.mode == "weekly":
+            self.mode = "daily"
         else: 
             self.mode = "total" 
 
@@ -88,6 +90,20 @@ class DashboardScreen(Screen):
         self.query_one("#projectList1", Label).update("Loading...")
         self.query_one("#projectList2", Label).update("Loading...")
         self.query_one("#projectList3", Label).update("Loading...")
+
+        if self.mode == "total":
+            self.query_one("#totalAllTimeLabel", Label).update("Total Time")
+            self.query_one("#topProjectsLabel", Label).update("Top Projects")
+            self.query_one("#topLanguagesLabel", Label).update("Top Languages")
+        elif self.mode == "weekly":
+            self.query_one("#totalAllTimeLabel", Label).update("Total Time This Week")
+            self.query_one("#topProjectsLabel", Label).update("Top Projects This Week")
+            self.query_one("#topLanguagesLabel", Label).update("Top Languages This Week")
+        elif self.mode == "daily":
+            self.query_one("#totalAllTimeLabel", Label).update("Total Time Today")
+            self.query_one("#topProjectsLabel", Label).update("Top Projects Today")
+            self.query_one("#topLanguagesLabel", Label).update("Top Languages Today")
+            
 
         self.fetch_data()
 
@@ -218,9 +234,17 @@ class DashboardScreen(Screen):
             "Authorization": f"Bearer {self.api_key}"
         }
 
+        url = ""
+        if self.mode == "total":
+            url = "/api/v1/users/my/stats?start_date=&end_date=&limit=3&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true"
+        elif self.mode == "weekly":
+            url = f"/api/v1/users/my/stats?start_date={(datetime.now(timezone.utc) - timedelta(days=7)).isoformat(timespec='seconds')}&end_date=&limit=3&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true"
+        elif self.mode == "daily":
+            url = f"/api/v1/users/my/stats?start_date={(datetime.combine(datetime.now(timezone.utc).date(), time.min, tzinfo=timezone.utc)).isoformat(timespec='seconds')}&end_date=&limit=3&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true"
+
         conn.request(
             "GET",
-            "/api/v1/users/my/stats?start_date=&end_date=&limit=3&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true",
+            url,
             headers=headers
         )
 
@@ -235,15 +259,21 @@ class DashboardScreen(Screen):
         self.query_one("#totalAllTime", Digits).update(self.getDigitFormat(self.total_seconds))
 
         print(data_dict["data"])
-        for i in range(len(self.projects)):
-            project = self.projects[i]
-            project_text = str(i + 1) + ". " + project["name"] + " " * (20 - len(project["name"]))  + "Total Time: " + project["text"]
-            self.query_one("#projectList" + str(i+1), Label).update(project_text)
+        for i in range(3):
+            if len(self.projects) - 1 >= i:
+                project = self.projects[i]
+                project_text = str(i + 1) + ". " + project["name"] + " " * (20 - len(project["name"]))  + "Total Time: " + project["text"]
+                self.query_one("#projectList" + str(i+1), Label).update(project_text)
+            else:
+                self.query_one("#projectList" + str(i+1), Label).update("")
 
-        for i in range(len(self.languages)):
-            language = self.languages[i]
-            languge_text = str(i + 1) + ". " + language["name"] + " " * (20 - len(language["name"])) + "Total Time: " + language["text"]
-            self.query_one("#languageList" + str(i + 1), Label).update(languge_text) 
+        for i in range(3):
+            if len(self.languages) - 1 >= i:
+                language = self.languages[i]
+                languge_text = str(i + 1) + ". " + language["name"] + " " * (20 - len(language["name"])) + "Total Time: " + language["text"]
+                self.query_one("#languageList" + str(i + 1), Label).update(languge_text) 
+            else:
+                self.query_one("#languageList" + str(i + 1), Label).update("")
 
         conn.close()
 
