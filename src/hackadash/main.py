@@ -12,6 +12,8 @@ class Hackadash(App):
         "onboarding": OnboardingScreen,
         "dashboard": DashboardScreen}
 
+    BINDINGS = [("c", "quit", "Close Hackadash")]
+
     ansi_color = True
 
     def on_mount(self) -> None:
