@@ -5,12 +5,10 @@ from pathlib import Path
 
 
 class Hackadash(App):
-    
+
     CSS_PATH = "styles.tcss"
 
-    SCREENS = {
-        "onboarding": OnboardingScreen,
-        "dashboard": DashboardScreen}
+    SCREENS = {"onboarding": OnboardingScreen, "dashboard": DashboardScreen}
 
     BINDINGS = [("c", "quit", "Close Hackadash")]
 
@@ -26,6 +24,7 @@ class Hackadash(App):
 def main():
     app = Hackadash()
     app.run()
+
 
 if __name__ == "__main__":
     main()

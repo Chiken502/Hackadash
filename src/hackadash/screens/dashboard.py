@@ -10,14 +10,13 @@ import json
 from datetime import datetime, timedelta, timezone, time
 
 
-
 class DashboardScreen(Screen):
     """Dashboard Screen to display info from hackatime api calls"""
 
     BINDINGS = [
         ("r", "refresh", "Refresh Dashboard"),
-        ("s", "switch", "Switch time range")
-        ]
+        ("s", "switch", "Switch time range"),
+    ]
 
     display_name = ""
     mode = "total"
@@ -38,8 +37,12 @@ class DashboardScreen(Screen):
                         yield Label("Daily avg past 7 days: ...", id="dailyAvgTime")
 
                 with Vertical(id="leaderboards"):
-                    yield Label("Daily Leaderboard Rank: ...", id="dailyLeaderboardRank")
-                    yield Label("Weekly Leaderboard Rank: ...", id="weeklyLeaderboardRank")
+                    yield Label(
+                        "Daily Leaderboard Rank: ...", id="dailyLeaderboardRank"
+                    )
+                    yield Label(
+                        "Weekly Leaderboard Rank: ...", id="weeklyLeaderboardRank"
+                    )
 
             with Horizontal():
                 with Vertical(id="projects"):
@@ -50,10 +53,16 @@ class DashboardScreen(Screen):
 
                 with Vertical(id="languages"):
                     yield Label("Top Languages", id="topLanguagesLabel")
-                    yield Label("Loading...", id="languageList1", classes="languageLabel")
-                    yield Label("Loading...", id="languageList2", classes="languageLabel")
-                    yield Label("Loading...", id="languageList3", classes="languageLabel")
-        
+                    yield Label(
+                        "Loading...", id="languageList1", classes="languageLabel"
+                    )
+                    yield Label(
+                        "Loading...", id="languageList2", classes="languageLabel"
+                    )
+                    yield Label(
+                        "Loading...", id="languageList3", classes="languageLabel"
+                    )
+
         yield Footer()
 
     def _on_mount(self, event):
@@ -63,8 +72,12 @@ class DashboardScreen(Screen):
         self.query_one("#totalAllTime", Digits).update("00:00:00")
         self.query_one("#totalWeekTime", Label).update("Time past 7 days: ...")
         self.query_one("#dailyAvgTime", Label).update("Daily avg past 7 days: ...")
-        self.query_one("#dailyLeaderboardRank", Label).update("Daily Leaderboard Rank: ...")
-        self.query_one("#weeklyLeaderboardRank", Label).update("Weekly Leaderboard Rank: ...")
+        self.query_one("#dailyLeaderboardRank", Label).update(
+            "Daily Leaderboard Rank: ..."
+        )
+        self.query_one("#weeklyLeaderboardRank", Label).update(
+            "Weekly Leaderboard Rank: ..."
+        )
         self.query_one("#projectList1", Label).update("Loading...")
         self.query_one("#projectList2", Label).update("Loading...")
         self.query_one("#projectList3", Label).update("Loading...")
@@ -79,14 +92,18 @@ class DashboardScreen(Screen):
             self.mode = "weekly"
         elif self.mode == "weekly":
             self.mode = "daily"
-        else: 
-            self.mode = "total" 
+        else:
+            self.mode = "total"
 
         self.query_one("#totalAllTime", Digits).update("00:00:00")
         self.query_one("#totalWeekTime", Label).update("Time past 7 days: ...")
         self.query_one("#dailyAvgTime", Label).update("Daily avg past 7 days: ...")
-        self.query_one("#dailyLeaderboardRank", Label).update("Daily Leaderboard Rank: ...")
-        self.query_one("#weeklyLeaderboardRank", Label).update("Weekly Leaderboard Rank: ...")
+        self.query_one("#dailyLeaderboardRank", Label).update(
+            "Daily Leaderboard Rank: ..."
+        )
+        self.query_one("#weeklyLeaderboardRank", Label).update(
+            "Weekly Leaderboard Rank: ..."
+        )
         self.query_one("#projectList1", Label).update("Loading...")
         self.query_one("#projectList2", Label).update("Loading...")
         self.query_one("#projectList3", Label).update("Loading...")
@@ -98,12 +115,13 @@ class DashboardScreen(Screen):
         elif self.mode == "weekly":
             self.query_one("#totalAllTimeLabel", Label).update("Total Time This Week")
             self.query_one("#topProjectsLabel", Label).update("Top Projects This Week")
-            self.query_one("#topLanguagesLabel", Label).update("Top Languages This Week")
+            self.query_one("#topLanguagesLabel", Label).update(
+                "Top Languages This Week"
+            )
         elif self.mode == "daily":
             self.query_one("#totalAllTimeLabel", Label).update("Total Time Today")
             self.query_one("#topProjectsLabel", Label).update("Top Projects Today")
             self.query_one("#topLanguagesLabel", Label).update("Top Languages Today")
-            
 
         self.fetch_data()
 
@@ -127,19 +145,13 @@ class DashboardScreen(Screen):
             self.api_url = config["API Key"]["api_url"]
         else:
             self.app.switch_screen("onboarding")
-    
+
     def fetch_user_data(self):
         conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
-                
-        headers = {
-            "Authorization": f"Bearer {self.api_key}"
-        }
 
-        conn.request(
-            "GET",
-            "/api/hackatime/v1/users/current",
-            headers=headers
-        )
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+
+        conn.request("GET", "/api/hackatime/v1/users/current", headers=headers)
 
         response = conn.getresponse().read().decode("utf-8")
         data_dict = json.loads(response)
@@ -172,7 +184,9 @@ class DashboardScreen(Screen):
 
         self.daily_leaderboard_last_update = data_dict["generated_at"]
 
-        self.query_one("#dailyLeaderboardRank", Label).update(f"Daily Leaderboard Rank: {self.daily_leaderboard_rank}")
+        self.query_one("#dailyLeaderboardRank", Label).update(
+            f"Daily Leaderboard Rank: {self.daily_leaderboard_rank}"
+        )
 
         conn.close()
 
@@ -195,22 +209,22 @@ class DashboardScreen(Screen):
 
         self.weekly_leaderboard_last_update = data_dict["generated_at"]
 
-        self.query_one("#weeklyLeaderboardRank", Label).update(f"Weekly Leaderboard Rank: {self.weekly_leaderboard_rank}")
+        self.query_one("#weeklyLeaderboardRank", Label).update(
+            f"Weekly Leaderboard Rank: {self.weekly_leaderboard_rank}"
+        )
 
         conn.close()
 
     @work()
     async def fetch_weekly_stats(self):
         conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
-        
-        headers = {
-            "Authorization": f"Bearer {self.api_key}"
-        }
+
+        headers = {"Authorization": f"Bearer {self.api_key}"}
 
         conn.request(
             "GET",
             f"/api/v1/users/my/stats?start_date={(datetime.now(timezone.utc) - timedelta(days=7)).isoformat(timespec='seconds')}&end_date=&limit=1&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true",
-            headers=headers
+            headers=headers,
         )
 
         response = conn.getresponse().read().decode("utf-8")
@@ -221,18 +235,20 @@ class DashboardScreen(Screen):
         self.projects_week = data_dict["data"]["projects"]
         self.languages_week = data_dict["data"]["languages"]
 
-        self.query_one("#totalWeekTime", Label).update(f"Time past 7 days: {self.total_week_readable}")
-        self.query_one("#dailyAvgTime", Label).update(f"Daily avg past 7 days: {self.daily_avg_week_readable}")
+        self.query_one("#totalWeekTime", Label).update(
+            f"Time past 7 days: {self.total_week_readable}"
+        )
+        self.query_one("#dailyAvgTime", Label).update(
+            f"Daily avg past 7 days: {self.daily_avg_week_readable}"
+        )
 
         conn.close()
 
     @work()
     async def fetch_total_stats(self):
         conn = http.client.HTTPSConnection("hackatime.hackclub.com", timeout=30)
-        
-        headers = {
-            "Authorization": f"Bearer {self.api_key}"
-        }
+
+        headers = {"Authorization": f"Bearer {self.api_key}"}
 
         url = ""
         if self.mode == "total":
@@ -242,44 +258,56 @@ class DashboardScreen(Screen):
         elif self.mode == "daily":
             url = f"/api/v1/users/my/stats?start_date={(datetime.combine(datetime.now(timezone.utc).date(), time.min, tzinfo=timezone.utc)).isoformat(timespec='seconds')}&end_date=&limit=3&features=languages,projects&filter_by_project=&filter_by_category=&boundary_aware=true&total_seconds=false&no_ai_coding=true&test_param=true"
 
-        conn.request(
-            "GET",
-            url,
-            headers=headers
-        )
+        conn.request("GET", url, headers=headers)
 
         response = conn.getresponse().read().decode("utf-8")
         data_dict = json.loads(response)
 
         self.total_seconds = data_dict["data"]["total_seconds"]
         self.streak = data_dict["data"]["streak"]
-        self.projects : list = data_dict["data"]["projects"]
+        self.projects: list = data_dict["data"]["projects"]
         self.languages = data_dict["data"]["languages"]
 
-        self.query_one("#totalAllTime", Digits).update(self.getDigitFormat(self.total_seconds))
+        self.query_one("#totalAllTime", Digits).update(
+            self.getDigitFormat(self.total_seconds)
+        )
 
         print(data_dict["data"])
         for i in range(3):
             if len(self.projects) - 1 >= i:
                 project = self.projects[i]
-                project_text = str(i + 1) + ". " + project["name"] + " " * (20 - len(project["name"]))  + "Total Time: " + project["text"]
-                self.query_one("#projectList" + str(i+1), Label).update(project_text)
+                project_text = (
+                    str(i + 1)
+                    + ". "
+                    + project["name"]
+                    + " " * (20 - len(project["name"]))
+                    + "Total Time: "
+                    + project["text"]
+                )
+                self.query_one("#projectList" + str(i + 1), Label).update(project_text)
             else:
-                self.query_one("#projectList" + str(i+1), Label).update("")
+                self.query_one("#projectList" + str(i + 1), Label).update("")
 
         for i in range(3):
             if len(self.languages) - 1 >= i:
                 language = self.languages[i]
-                languge_text = str(i + 1) + ". " + language["name"] + " " * (20 - len(language["name"])) + "Total Time: " + language["text"]
-                self.query_one("#languageList" + str(i + 1), Label).update(languge_text) 
+                languge_text = (
+                    str(i + 1)
+                    + ". "
+                    + language["name"]
+                    + " " * (20 - len(language["name"]))
+                    + "Total Time: "
+                    + language["text"]
+                )
+                self.query_one("#languageList" + str(i + 1), Label).update(languge_text)
             else:
                 self.query_one("#languageList" + str(i + 1), Label).update("")
 
         conn.close()
 
     def getDigitFormat(self, seconds: int) -> str:
-        hours = int(seconds/60.0/60.0)
-        minutes = int((seconds - (hours*60*60)) /60.0)
-        remaning_seconds = seconds - (hours*60*60) - (minutes * 60)
+        hours = int(seconds / 60.0 / 60.0)
+        minutes = int((seconds - (hours * 60 * 60)) / 60.0)
+        remaning_seconds = seconds - (hours * 60 * 60) - (minutes * 60)
 
         return f"{hours:02}:{minutes:02}:{remaning_seconds:02}"
