@@ -12,7 +12,7 @@ class Hackadash(App):
 
     BINDINGS = [("c", "quit", "Close Hackadash")]
 
-    ansi_color = True
+    # ansi_color = True
 
     def on_mount(self) -> None:
         if Path("settings.cfg").is_file():

@@ -107,6 +107,9 @@ class DashboardScreen(Screen):
         self.query_one("#projectList1", Label).update("Loading...")
         self.query_one("#projectList2", Label).update("Loading...")
         self.query_one("#projectList3", Label).update("Loading...")
+        self.query_one("#languageList1", Label).update("Loading...")
+        self.query_one("#languageList2", Label).update("Loading...")
+        self.query_one("#languageList3", Label).update("Loading...")
 
         if self.mode == "total":
             self.query_one("#totalAllTimeLabel", Label).update("Total Time")
