@@ -10,8 +10,15 @@ A customizable dash board for hackatime in your terminal! Built with <a href="ht
 
 ## Installation & Running
 
-Follow these steps to set up and run the application locally:
+Follow these steps to install hackadash:
 
+### Installing from PyPI
+```
+pip install Hackadash
+```
+
+## Installing repo for editing
+Follow these steps if you want to edit hackadash:
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/Chiken502/Hackadash
@@ -35,14 +42,13 @@ Install the repository locally in editable mode so your CLI shortcut is register
 pip install -e .
 ```
 
-### 4. Run the app
+## Running the app
 Now you can start the application from anywhere in your terminal by running:
 ```bash
 hackadash
 ```
-**Note**: You still have to be in the virtual environment that you installed hackadash inside of in step 3. If you want to run hackadash from anywhere skip step 2.
 
-### 5. Enter Hackatime API Key
+#### Enter Hackatime API Key
 ![Hackadash Setup Screen](https://github.com/Chiken502/Hackadash/blob/main/images/exampleImg2.png?raw=true)
 
 Select one of the two given options to continue. This step gets your hackatime API Key so that Hackadash can send API requests for the data it displays. On this screen you are presented with two options.
