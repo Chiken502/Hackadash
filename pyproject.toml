@@ -4,13 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Hackadash"
-version = "0.1.0"
+version = "1.0.0"
 description = "A dashboard to display Hackatime stats"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
     "textual>=8.2.8",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Chiken502/Hackadash"
+Issues = "https://github.com/Chiken502/Hackadash/issues"
 
 [project.scripts]
 hackadash = "hackadash.main:main"
