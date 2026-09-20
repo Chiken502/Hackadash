@@ -8,6 +8,8 @@ A customizable dash board for hackatime in your terminal! Built with <a href="ht
 
 ![Hackadash Dashboard image](https://github.com/Chiken502/Hackadash/blob/main/images/exampleImg1.png?raw=true)
 
+[Want to see it in action?](https://asciinema.org/a/N1g0S7IIOckPUJh5)
+
 ## Installation & Running
 
 Follow these steps to install hackadash:
