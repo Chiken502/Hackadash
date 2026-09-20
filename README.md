@@ -6,7 +6,7 @@
 A customizable dash board for hackatime in your terminal! Built with <a href="https://github.com/Textualize/textual">Textual</a>, an amazing TUI framework!
 </p>
 
-![Hackadash Dashboard image](images/exampleImg1.png)
+![Hackadash Dashboard image](https://github.com/Chiken502/Hackadash/blob/main/images/exampleImg1.png?raw=true)
 
 ## Installation & Running
 
@@ -43,7 +43,7 @@ hackadash
 **Note**: You still have to be in the virtual environment that you installed hackadash inside of in step 3. If you want to run hackadash from anywhere skip step 2.
 
 ### 5. Enter Hackatime API Key
-![Hackatime Setup Screen](images/exampleImg2.png)
+![Hackadash Setup Screen](https://github.com/Chiken502/Hackadash/blob/main/images/exampleImg2.png?raw=true)
 
 Select one of the two given options to continue. This step gets your hackatime API Key so that Hackadash can send API requests for the data it displays. On this screen you are presented with two options.
 
@@ -65,7 +65,7 @@ Select one of the two given options to continue. This step gets your hackatime A
 - Customizable Themes! (Just comes with Textual! use `^p` or `cmd + p` to open the menu)
 
 ## Hackadash Bindings
-![Bindings](images/bindingsImg.png)
+![Bindings](https://github.com/Chiken502/Hackadash/blob/main/images/bindingsImg.png?raw=true)
 Bindings are keys that you can press to do something
 
 - r: Refresh the API data

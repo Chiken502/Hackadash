@@ -67,14 +67,14 @@ class OnboardingScreen(Screen):
                     print(f"Error reading the configuration file: {e}")
                     result_label: Label = self.query_one("#searchResult", Label)
                     result_label.update(f"Error reading the configuration file: {e}")
-                    result_label.styles.color = "$error"
+                    result_label.styles.color = self.app.theme_variables["error"]
 
             else:
                 result_label: Label = self.query_one("#searchResult", Label)
                 result_label.update(
                     f"Could not find wakatime config at: {str(config_file)}"
                 )
-                result_label.styles.color = "$error"
+                result_label.styles.color = self.app.theme_variables["error"]
 
         elif button_id == "continueCfg":
             self.create_config_file(self.api_key, self.api_url, "wakatime.cfg")
